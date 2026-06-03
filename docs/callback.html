@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Auth Callback</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, sans-serif; background: #0a0a0a; color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .card { background: #1a1a2e; border: 1px solid #ffffff20; border-radius: 16px; padding: 40px; max-width: 500px; width: 90%; text-align: center; }
+  h1 { font-size: 1.5rem; margin-bottom: 8px; }
+  .success { color: #4ade80; font-size: 3rem; margin-bottom: 16px; }
+  .error { color: #f87171; font-size: 3rem; margin-bottom: 16px; }
+  .code-box { background: #0d0d1a; border: 1px solid #ffffff30; border-radius: 8px; padding: 16px; margin: 20px 0; font-family: monospace; font-size: 0.85rem; word-break: break-all; color: #c9a84c; }
+  .btn { background: #c9a84c; color: #000; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+  p { color: #888; font-size: 0.9rem; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div id="icon">⏳</div>
+  <h1 id="title">İşleniyor...</h1>
+  <div class="code-box" id="code-box" style="display:none"></div>
+  <button class="btn" id="copy-btn" style="display:none" onclick="copyCode()">📋 Kodu Kopyala</button>
+  <p id="msg"></p>
+</div>
+<script>
+  function getParam(name) {
+    return new URLSearchParams(window.location.search).get(name);
+  }
+  function copyCode() {
+    const code = document.getElementById('code-box').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      document.getElementById('copy-btn').innerText = '✅ Kopyalandı!';
+    });
+  }
+  window.onload = function() {
+    const code = getParam('code');
+    const error = getParam('error');
+    if (code) {
+      document.getElementById('icon').innerText = '✅';
+      document.getElementById('title').innerText = 'TikTok Bağlantısı Başarılı!';
+      document.getElementById('code-box').innerText = code;
+      document.getElementById('code-box').style.display = 'block';
+      document.getElementById('copy-btn').style.display = 'inline-block';
+      document.getElementById('msg').innerText = 'Bu kodu kopyalayıp terminale yapıştır.';
+      // LocalStorage'a kaydet
+      localStorage.setItem('tiktok_auth_code', code);
+    } else if (error) {
+      document.getElementById('icon').innerText = '❌';
+      document.getElementById('title').innerText = 'Bağlantı Başarısız';
+      document.getElementById('msg').innerText = 'Hata: ' + error + '. Tekrar dene.';
+    } else {
+      document.getElementById('icon').innerText = '⚠️';
+      document.getElementById('title').innerText = 'Kod Bulunamadı';
+      document.getElementById('msg').innerText = 'URL parametresi eksik.';
+    }
+  };
+</script>
+</body>
+</html>
